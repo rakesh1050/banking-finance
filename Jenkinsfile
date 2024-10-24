@@ -23,5 +23,25 @@ pipeline {
         publishHTML([allowMissing: false, alwaysLinkToLastBuild: false, keepAll: false, reportDir: '/var/lib/jenkins/workspace/banking-finance/target/surefire-reports', reportFiles: 'index.html', reportName: 'HTML Report', reportTitles: '', useWrapperFileDirectly: true])
                           }
             }
+    stage('Create Docker Image') {
+      steps {
+        echo 'This stage will Create a Docker image'
+        sh "docker image build -t rakesh1050/banking-finance:1.0 ."
+                          }
+            }
+    stage('Login to Dockerhub') {
+      steps {
+        echo 'This stage will loginto Dockerhub'
+        withCredentials([usernamePassword(credentialsId: 'Dockerlogin', passwordVariable: 'docker-pass', usernameVariable: 'docker-login')]) {
+        sh 'docker login -u ${docker-login} -p ${docker-pass}'
+            }
+        }
+    }
+      stage('Docker Push-Image') {
+      steps {
+        echo 'This stage will push my new image to the dockerhub'
+        sh 'docker push rakesh1050/banking-finance:1.0'
+          }
+      }
   }
 } 
